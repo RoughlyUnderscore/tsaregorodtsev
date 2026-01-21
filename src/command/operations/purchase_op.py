@@ -6,6 +6,7 @@ from model import EventSession, User, SeatState
 
 
 class PurchaseTicket(BookingCommand):
+    """ Оплачивает бронирование места. """
     def __init__(self):
         super().__init__()
 
@@ -21,7 +22,7 @@ class PurchaseTicket(BookingCommand):
         seat = event.seats[seat_id]
         if seat.status != SeatState.BOOKED:
             return Err("Это место не забронировано.")
-        
+
         if seat.user is None or seat.user != user:
             return Err("Вы не можете оплатить бронирование данного места.")
 
@@ -31,7 +32,7 @@ class PurchaseTicket(BookingCommand):
         def change():
             seat.status = SeatState.SOLD
             seat.user = user
-        
+
         def undo():
             seat.status = SeatState.BOOKED
 
