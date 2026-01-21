@@ -5,35 +5,41 @@ from result import is_err
 
 
 class BookingProcessor:
+    """
+    Процессор для операций бронирования, покупки и отмены бронирования
+    мест, отвечает за выполнение и откаты операций.
+    """
+
     def __init__(self):
         self.rollbacks: Dict[int, list[Any]] = {}
         self.last = 0
-    
+
     def execute(
         self,
         event: EventSession,
         seat_id: str,
         user: User,
         cmd: BookingCommand
-    ) -> int:        
+    ) -> int:
         exec_res = cmd.execute(event, seat_id, user)
         if is_err(exec_res):
             raise RuntimeError(exec_res.err_value)
-        
+
         staged, rollback = exec_res.ok_value
         for change in staged:
             change()
-        
+
         id = self.last
         self.last += 1
-        
+
         self.rollbacks[id] = rollback
         return id
-    
+
     def rollback(self, id: int):
         if id not in self.rollbacks:
-            raise RuntimeError("Данная операция не существует," \
-            "либо не может быть отменена.")
-        
+            raise RuntimeError(
+                "Данная операция не существует, либо не может быть отменена."
+            )
+
         for rollback in self.rollbacks[id]:
             rollback()
