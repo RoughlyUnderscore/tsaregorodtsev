@@ -6,6 +6,8 @@ from model import EventSession, User, SeatState
 
 
 class ReserveSeat(BookingCommand):
+    """ Бронирует место для данного пользователя. """
+
     def __init__(self):
         super().__init__()
 
@@ -28,7 +30,7 @@ class ReserveSeat(BookingCommand):
         def change():
             seat.status = SeatState.BOOKED
             seat.user = user
-        
+
         def undo():
             seat.status = SeatState.AVAILABLE
             seat.user = None
