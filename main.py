@@ -25,7 +25,10 @@
 from model import User, Seat, EventSession
 from datetime import datetime
 from command import BookingProcessor
-from command.operations import CancelReservation, ChangeSeat, PurchaseTicket, ReserveSeat
+from command.operations import CancelReservation, \
+    ChangeSeat, \
+    PurchaseTicket, \
+    ReserveSeat
 
 event = EventSession(
     id="Дебют ИРИТ-РТФ",
@@ -86,7 +89,8 @@ try:
 except RuntimeError as ex:
     print("Не удалось выполнить операцию. Причина:", ex)
 
-# Но если Георгий Палыч откатит бронь, то Илья Николаич сможет откатить свою отмену
+# Но если Георгий Палыч откатит бронь,
+# то Илья Николаич сможет откатить свою отмену
 proc.rollback(rival_reserve_id)
 proc.rollback(cancel_id)
 print(event.seats["A3"])
