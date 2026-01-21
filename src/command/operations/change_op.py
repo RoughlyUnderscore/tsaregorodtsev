@@ -6,6 +6,7 @@ from model import EventSession, User, SeatState
 
 
 class ChangeSeat(BookingCommand):
+    """ Отменяет бронь уже забронированного места и бронирует новое. """
     def __init__(self):
         super().__init__()
 
@@ -24,7 +25,7 @@ class ChangeSeat(BookingCommand):
 
         if event.time < datetime.now():
             return Err("На это событие уже нельзя забронировать место.")
-        
+
         def get_current():
             return next(
                 (
@@ -33,7 +34,7 @@ class ChangeSeat(BookingCommand):
                 ),
                 None
             )
-        
+
         prev = get_current()
         if not prev:
             return Err("У вас не забронировано не одного места.")
@@ -43,15 +44,15 @@ class ChangeSeat(BookingCommand):
             prev.user = None
             seat.status = SeatState.BOOKED
             seat.user = user
-        
+
         def undo():
             if prev.status != SeatState.AVAILABLE:
-                raise RuntimeError("Предыдущее место уже занято или забронировано.")
-            
+                raise RuntimeError("Предыдущее место занято/забронировано.")
+
             cur = get_current()
-            if not get_current():
+            if not cur:
                 raise RuntimeError("У вас не забронировано ни одного места.")
-            
+
             prev.status = SeatState.BOOKED
             prev.status = user
             seat.status = SeatState.AVAILABLE
