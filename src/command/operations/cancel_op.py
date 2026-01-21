@@ -6,6 +6,8 @@ from model import EventSession, User, SeatState
 
 
 class CancelReservation(BookingCommand):
+    """Отменяет бронь места."""
+
     def __init__(self):
         super().__init__()
 
@@ -21,7 +23,7 @@ class CancelReservation(BookingCommand):
         seat = event.seats[seat_id]
         if seat.status != SeatState.BOOKED:
             return Err("Это место не забронировано.")
-        
+
         if seat.user is None or seat.user != user:
             return Err("Вы не можете отменить бронирование данного места.")
 
@@ -31,11 +33,11 @@ class CancelReservation(BookingCommand):
         def change():
             seat.status = SeatState.AVAILABLE
             seat.user = None
-        
+
         def undo():
             if seat.status != SeatState.AVAILABLE:
                 raise RuntimeError("Это место уже занято или забронировано.")
-            
+
             seat.status = SeatState.BOOKED
             seat.user = user
 
